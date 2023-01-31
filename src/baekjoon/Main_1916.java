@@ -11,9 +11,11 @@ public class Main_1916 {
         M = Integer.parseInt(br.readLine());
 
         List<List<Pair>> list = new ArrayList<>();
+        int distance[] = new int[N];
 
         for(int i = 0; i<N; i++) {
             list.add(new ArrayList<>());
+            distance[i] = Integer.MAX_VALUE;
         }
 
         for(int i = 0; i<M; i++) {
@@ -23,13 +25,31 @@ public class Main_1916 {
             int c = Integer.parseInt(st.nextToken());
 
             list.get(a-1).add(new Pair(b-1, c));
-            list.get(b-1).add(new Pair(a-1, c));
         }
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        int start = Integer.parseInt(st.nextToken()) - 1;
+        int end = Integer.parseInt(st.nextToken()) - 1;
 
         PriorityQueue<Pair> pq = new PriorityQueue<>();
+        pq.add(new Pair(start, 0));
 
+        distance[start] = 0;
 
-
+        while(!pq.isEmpty()){
+            int now = pq.peek().x;
+            int dis = pq.poll().y;
+//            System.out.println("어디서 : " + now + "거리는 : " + dis);
+            if(distance[now]<dis) continue;
+            for(int i = 0; i<list.get(now).size(); i++) {
+                Pair pair = list.get(now).get(i);
+                if(distance[pair.x] > dis + pair.y) {
+//                    System.out.println("좌표 : " + pair.x + " , 거리 : "+(dis+pair.y));
+                    distance[pair.x] = dis + pair.y;
+                    pq.add(new Pair(pair.x, dis + pair.y));
+                }
+            }
+        }
+        System.out.println(distance[end]);
     }
 
     static class Pair implements Comparable<Pair> {
@@ -43,8 +63,8 @@ public class Main_1916 {
 
         @Override
         public int compareTo(final Pair o) {
-            if(x == o.x) return Integer.compare(y, o.y);
-            return Integer.compare(x, o.x);
+            if(y == o.y) return Integer.compare(x, o.x);
+            return Integer.compare(y, o.y);
         }
     }
 }
