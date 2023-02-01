@@ -4,10 +4,10 @@ import java.io.*;
 import java.util.*;
 
 public class Main_16198 {
+    public static int ans;
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int N = Integer.parseInt(br.readLine());
-        int ans = 0;
         List<Integer> list = new ArrayList<>();
 
         StringTokenizer st = new StringTokenizer(br.readLine());
@@ -17,20 +17,20 @@ public class Main_16198 {
         }
         int cnt = N;
 
-        while(cnt>2) {
-            long maxVal = 0;
-            long del = -1;
-            for(int i = 1; i<cnt-1; i++) {
-                long now = list.get(i-1)*list.get(i+1);
-                if(now > maxVal) {
-                    maxVal = now;
-                    del = i;
-                }
-            }
-            cnt-=1;
-            ans += maxVal;
-            list.remove(del);
-        }
+        energy(list, 0);
         System.out.println(ans);
+    }
+
+    public static void energy(List<Integer> list, int sum){
+        if(list.size()<3) {
+            ans = ans>sum ? ans : sum;
+            return;
+        }
+        for(int i = 1; i<list.size()-1; i++) {
+            int tmp = list.get(i);
+            list.remove(i);
+            energy(list, sum + list.get(i-1)*list.get(i));
+            list.add(i, tmp);
+        }
     }
 }
