@@ -1,6 +1,7 @@
 package baekjoon;
 
 import java.io.*;
+import java.text.NumberFormat;
 import java.util.*;
 
 public class Main_2887 {
@@ -59,6 +60,12 @@ public class Main_2887 {
                 unionParent(list.get(i).x, list.get(i).y);
             }
         }
+
+        ans = 2000000000.0;
+        NumberFormat format = NumberFormat.getInstance();
+        format.setGroupingUsed(false);
+        System.out.println(format.format(ans));
+        System.out.println(ans);
 
         System.out.printf("%.0f", ans);
     }
