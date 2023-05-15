@@ -2,45 +2,58 @@ package baekjoon;
 
 import java.io.*;
 import java.util.*;
-
 public class Main_16432 {
     static int N;
-    static List<Integer> [] list;
-    static int []ans;
-    static boolean flag;
+    static List []arr;
+    static boolean [][]check;
+    static int []answer;
     public static void main(String[] args) throws IOException{
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         N = Integer.parseInt(br.readLine());
-        list = new ArrayList[N];
+        arr = new ArrayList[N];
+        check = new boolean[N+1][10];
+        answer = new int[N];
+
         for(int i = 0; i<N; i++){
+            arr[i] = new ArrayList<>();
             StringTokenizer st = new StringTokenizer(br.readLine());
             int m = Integer.parseInt(st.nextToken());
-            list[i] = new ArrayList<>();
             for(int j = 0; j<m; j++){
-                list[i].add(Integer.parseInt(st.nextToken()));
+                int n = Integer.parseInt(st.nextToken());
+                arr[i].add(n);
             }
         }
 
-        ans = new int[N];
-        teok(0, 0);
-        if(!flag) System.out.println(-1);
-    }
-    static void teok(int n, int yesterday){
 
-        if(n==N) {
-            flag = true;
+        if(dfs(0,1)){
             for(int i = 0; i<N; i++){
-                System.out.println(ans[i]);
+                System.out.print(answer[i]+" ");
             }
-            return;
+        } else {
+            System.out.println("-1");
         }
-        for(int i = 0; i<list[n].size(); i++){
-            if(yesterday != list[n].get(i)) {
-                if(flag) return;
-                ans[n] = list[n].get(i);
-                teok(n+1, list[n].get(i));
-                ans[n] = 0;
+
+    }
+
+    static boolean dfs(int before, int day){
+        if(day == N){
+            for(int i = 0; i<arr[day-1].size(); i++){
+                if(before != (int) arr[day-1].get(i)){
+                    answer[day-1] = (int) arr[day-1].get(i);
+                    return true;
+                }
             }
         }
+
+        for(int i = 0; i<arr[day-1].size(); i++){
+            int next = (int) arr[day-1].get(i);
+
+            if(before != next && !check[day+1][next]){
+                check[day+1][next] = true;
+                answer[day-1] = next;
+                if(dfs(next, day+1)) return true;
+            }
+        }
+        return false;
     }
 }
