@@ -7,8 +7,7 @@ public class Main_14500 {
     static int N;
     static int M;
     static int arr[][];
-    static int ans;
-    public static void main(String[] args) throws IOException{
+    public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
         N = Integer.parseInt(st.nextToken());
@@ -21,73 +20,107 @@ public class Main_14500 {
             }
         }
 
-        int mv[][] = {{-1, 0},{1,0},{0,-1},{0,1}};
+        int ans = 0;
 
-        for(int i = 0; i<N; i++){
-            for(int j = 0; j<M; j++){
-                Queue<int[]> q = new LinkedList<>();
-                q.add(new int[]{1, M*i+j, -1, -1, -1, arr[i][j]});
-                while(!q.isEmpty()){
-                    int tmp[] = q.poll();
-                    if(tmp[0] == 4) {
-                        ans = Math.max(tmp[5], ans);
-                        continue;
-                    }
-
-                    //2칸 채워졌을 때 ㅗ, ㅜ, ㅏ, ㅓ 모양으로 채우기(2칸 뻗은 방향으로 3칸 나가고 가운데에 하나 나가기)
-                    if(tmp[0] == 2){
-                        int mv_a = (2*tmp[2] - tmp[1])/M;
-                        int mv_b = (2*tmp[2] - tmp[1])%M;
-                        if(isValid(mv_a, mv_b, tmp)) {
-                            int imsi[] = fillArray(mv_a, mv_b, tmp);
-                            int a = tmp[2]/M;
-                            int b = tmp[2]%M;
-                            if((tmp[2] - tmp[1])/M == 0){
-                                if(isValid(a+mv[0][0], b+mv[0][1], imsi)) {
-                                    q.add(fillArray(a+mv[0][0], b+mv[0][1], imsi));
-                                }
-                                if(isValid(a+mv[1][0], b+mv[1][1], imsi)) {
-                                    q.add(fillArray(a+mv[1][0], b+mv[1][1], imsi));
-                                }
-                            } else {
-                                if(isValid(a+mv[2][0], b+mv[2][1], imsi)) {
-                                    q.add(fillArray(a+mv[2][0], b+mv[2][1], imsi));
-                                }
-                                if(isValid(a+mv[3][0], b+mv[3][1], imsi)) {
-                                    q.add(fillArray(a+mv[3][0], b+mv[3][1], imsi));
-                                }
-                            }
-                        }
-                    }
-
-                    //ㅗ 모양 제외
-                    for(int k = 0; k<4; k++){
-                        int a = tmp[tmp[0]]/M + mv[k][0];
-                        int b = tmp[tmp[0]]%M + mv[k][1];
-                        if(isValid(a, b, tmp)) {
-                            q.add(fillArray(a, b, tmp));
-                        }
-                    }
-                }
+        for(int i = 0; i<N; i++) {
+            for (int j = 0; j < M; j++) {
+                ans = Math.max(ans, stick(i, j));
+                ans = Math.max(ans, square(i, j));
+                ans = Math.max(ans, twisted(i, j));
             }
         }
 
         System.out.println(ans);
+
     }
 
-    static int[] fillArray(int a, int b, int tmp[]){
-        int imsi[] = Arrays.copyOf(tmp, 6);
-        imsi[0] += 1;
-        imsi[imsi[0]] = a*M+b;
-        imsi[5]+=arr[a][b];
-        return imsi;
+    static int stick(int x, int y){
+        int maxn = 0;
+        if(x+3<N) {
+            for(int i = 0; i<4; i++){
+                maxn += arr[x + i][y];
+            }
+        }
+
+        if(y+3<M) {
+            int tmp = 0;
+            for (int i = 0; i < 4; i++) {
+                tmp += arr[x][y + i];
+            }
+            maxn = Math.max(maxn, tmp);
+        }
+        return maxn;
     }
 
-    static boolean isValid(int a, int b, int tmp[]){
-        if(a<0||b<0||a>=N||b>=M) return false;
-        for(int i = 1; i<=tmp[0]; i++){
-            if(tmp[i] == a*M+b) return false;
+    static int square(int x, int y){
+        int maxn = 0;
+        if(x+1<N && y+1<M){
+            maxn += arr[x][y] + arr[x][y+1] + arr[x+1][y] + arr[x+1][y+1];
+        }
+        return maxn;
+    }
+
+    static int twisted(int x, int y){
+        int maxn = 0;
+        int position[][][] = {{{0, 0}, {1, 0}, {1, 1}, {1, 2}},
+                {{0, 0}, {-1, 0}, {-1, 1}, {-1, 2}},
+                {{0, 0}, {1, 0}, {1, 1}, {2, 1}},
+                {{0, 0}, {1, 0}, {1, -1}, {2, -1}},
+                {{0, 0}, {1, 0}, {1, 1}, {2, 0}}};
+        int figure[][] = new int[4][2];
+
+        for(int j = 0; j<5; j++) {
+            for (int i = 0; i < 4; i++) {
+                figure[i][0] = position[j][i][0] + x;
+                figure[i][1] = position[j][i][1] + y;
+            }
+
+            for (int i = 0; i < 4; i++) {
+                if (isOkay(figure)) maxn = Math.max(maxn, sumPosition(figure));
+
+                figure = rightRotateFigure(figure, position[j]);
+                position[j] = rightAngleLotationPosition(position[j]);
+
+            }
+        }
+
+        return maxn;
+    }
+
+    // 기준점으로 도형 90도 반시계로 돌리는 함수
+    static int [][] rightRotateFigure(int [][] figure, int [][]position){
+        int rightTurn[][] = rightAngleLotationPosition(position);
+        for(int i = 0; i<4; i++){
+            figure[i][0] = figure[i][0] - position[i][0] + rightTurn[i][0];
+            figure[i][1] = figure[i][1] - position[i][1] + rightTurn[i][1];
+        }
+        return figure;
+    }
+
+    // 90도 반시계로 회전하는 공식 (a, b) => (-b, a)
+    static int [][] rightAngleLotationPosition(int [][] position){
+        int ans[][] = new int[4][2];
+        for(int i = 0; i<4; i++){
+            ans[i][0] = -position[i][1];
+            ans[i][1] = position[i][0];
+        }
+        return ans;
+    }
+
+    // 배열 나가는지 체크
+    static boolean isOkay (int [][]figure){
+        for(int i = 0; i<4; i++){
+            if(figure[i][0]<0||figure[i][0]>=N) return false;
+            if(figure[i][1]<0||figure[i][1]>=M) return false;
         }
         return true;
+    }
+
+    static int sumPosition(int [][]figure){
+        int ans = 0;
+        for(int i = 0; i<4; i++){
+            ans += arr[figure[i][0]][figure[i][1]];
+        }
+        return ans;
     }
 }
