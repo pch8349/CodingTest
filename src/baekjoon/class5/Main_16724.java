@@ -6,89 +6,60 @@ import java.util.*;
 public class Main_16724 {
 
     static int N, M;
-    static String[][] arr;
-    static int [][] parents;
+    static int count = 0;
+    static char[][] arr;
+    static int[][] group;
+    static Map<Character, int[]> mv = Map.of(
+            'D', new int[]{1, 0}, 'U', new int[]{-1, 0}, 'L', new int[]{0, -1}, 'R', new int[]{0, 1}
+    );
 
-    public static void main(String[] args) throws IOException{
+    public static void dfs(int x, int y, int id){
+        int mx = x + mv.get(arr[x][y])[0];
+        int my = y + mv.get(arr[x][y])[1];
+
+        group[x][y] = id; // 방문중임을 표시
+
+        if(group[mx][my] == 0){
+            dfs(mx, my, id);
+        } else if(group[x][y] == group[mx][my]){
+            group[x][y] = id;
+            count++;
+        } else {
+            group[x][y] = group[mx][my];
+        }
+        group[x][y] = group[mx][my];
+    }
+
+    public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
         N = Integer.parseInt(st.nextToken());
         M = Integer.parseInt(st.nextToken());
-        arr = new String[N][M];
-        parents = new int[N][M];
+        arr = new char[N][M];
+        group = new int[N][M];
+
         for (int i = 0; i < N; i++) {
-            String line = br.readLine();
-            arr[i] = line.split("");
-            for (int j = 0; j < M; j++) {
-                parents[i][j] = -1;
-            }
+            st = new StringTokenizer(br.readLine());
+            arr[i] = st.nextToken().toCharArray();
         }
 
-//        for(int i = 0; i < N; i++){
-//            for(int j = 0; j < M; j++){
-//                parents[i][j] = i*M + j;
-//                System.out.print(parents[i][j]+" ");
-//            }
-//            System.out.println();
-//        }
-
-        for(int i = 0; i<N; i++){
-            for(int j = 0; j<M; j++){
-                if(parents[i][j] == -1){
-                    int p = i * M + j;
-                    int x = i;
-                    int y = j;
-                    while(true){
-                        // 방문 아직 안했으면
-                        if(parents[x][y] == -1) {
-                            parents[x][y] = p;
-                            switch(arr[x][y]){
-                                case "D" :
-                                    x+=1;
-                                    break;
-                                case "U" :
-                                    x-=1;
-                                    break;
-                                case "R" :
-                                    y+=1;
-                                    break;
-                                case "L" :
-                                    y-=1;
-                                    break;
-                            }
-                        }
-
-                        // 방문 했고 같으면
-                        else if(parents[x][y] == p){
-                            break;
-                        }
-
-                        // 방문 헀고 다르면
-                        else {
-                            unionParent(p, x*M+y);
-                            break;
-                        }
-                    }
+        int id = 1;
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < M; j++) {
+                if (group[i][j] == 0) {
+                    dfs(i, j, id++);
                 }
             }
         }
 
-        Set<Integer> set = new HashSet<>();
-        for(int i = 0; i<N*M; i++) {
-            set.add(parents[i/M][i%M]);
-        }
-        System.out.println(set.size());
-    }
+        System.out.println(count);
 
-    static int getParent(int x){
-        if(parents[x/M][x%M] == x) return x;
-        else return parents[x/M][x%M] = getParent(parents[x/M][x%M]);
-    }
-
-    static void unionParent(int a, int b){
-        a = getParent(a);
-        b = getParent(b);
-        if(a < b) parents[b/M][b%M] = a;
-        else parents[a/M][a%M] = b;
+//        for(int i = 0; i < N; i++){
+//            for(int j = 0; j < M; j++){
+//                System.out.print(arr[i][j]);
+//            }
+//            System.out.println();
+//        }
+//    }
     }
 }
