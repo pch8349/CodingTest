@@ -4,8 +4,7 @@ import java.io.*;
 import java.util.*;
 
 public class Main_7453 {
-    static int N;
-    static int arr[][];
+    static int[][] arr;
     static int[] xArr;
     static int[] yArr;
     public static void main(String[] args) throws IOException {
