@@ -30,26 +30,45 @@ public class Main_7453 {
         Arrays.sort(xArr);
         Arrays.sort(yArr);
 
-        for(int i = 0; i<N*N; i++){
-            System.out.println(xArr[i]+" "+yArr[i]);
-        }
-
-        /*
-            a*b , c*d 배열을 만들어 이분탐색 할 생각이었으나
-            양 끝점부터 시작해 탐색했을 때
-            pivot 의 값들이 0이 넘어가는 순간 어케 해야할지 생각해야됨
-         */
-
         int x = 0;
         int y = N*N-1;
-        int ans = 0;
+        long ans = 0;
         while (true) {
-            if(x<0 || y < 0 || x>=N*N || y>=N*N){
+            if(y < 0 || x>=N*N){
                 break;
             }
-            if(xArr[x] + yArr[x] == 0){
-                ans++;
+            if(xArr[x] + yArr[y] == 0){
+                // x 값 증가시키기
+                int tmpX = x;
+                long xTmpCnt = 1;
+                while(true){
+                    x++;
+                    if(x<N*N && xArr[x] == xArr[tmpX]) {
+                        xTmpCnt++;
+                    } else {
+                        break;
+                    }
+                }
+                // y 값 감소시키기
+                int tmpY = y;
+                long yTmpCnt = 1;
+                while(true){
+                    y--;
+                    if(y>=0 && yArr[y] == yArr[tmpY]){
+                        yTmpCnt++;
+                    } else {
+                        break;
+                    }
+                }
+                ans += xTmpCnt * yTmpCnt;
+                // 둘 다 해봐야함.
+            } else if(xArr[x] + yArr[y] < 0){
+                x++;
+            } else {
+                y--;
             }
         }
+
+        System.out.println(ans);
     }
 }
