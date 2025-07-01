@@ -16,12 +16,10 @@ public class Main_13335 {
         q.add(new int[]{0, 0});
         int nowWeight = trucks[0]; // 현재 다리 위 위치
         int sec = 1; // 현재 지난 시간. 다리위에 첫 트럭 올려서 1초로 초기화
-        int idx = 0; // 다음으로 올라가야할 트럭 번호
+        int idx = 1; // 다음으로 올라가야할 트럭 번호
 
         while(!q.isEmpty()){
-             System.out.println(sec+" "+q.size() + " " + q.peek()[0]+","+q.peek()[1]);
             int plus = 1;
-            idx+=1;
             if (idx<N && nowWeight+trucks[idx]>L){ // 다리의 무게 때문에 못올라가면
                 nowWeight -= trucks[q.peek()[0]]; // 가장먼저 올라간 트럭을 빼줌(무게)
                 plus = W - q.poll()[1]; // 위치도 끝까지 빼줌
@@ -34,9 +32,12 @@ public class Main_13335 {
 
             sec += plus;
 
-            if(!q.isEmpty() && q.peek()[1] >= W) q.poll(); // 혹시 이동시켰을 때 다리 밖으로 나가면 빼줌
+            if(!q.isEmpty() && q.peek()[1] >= W) nowWeight -= trucks[q.poll()[0]]; // 혹시 이동시켰을 때 다리 밖으로 나가면 빼줌
 
-            q.add(new int[]{idx, 0});
+            if(idx<N && nowWeight+trucks[idx]<=L) { // 신규 트럭 올리기
+                q.add(new int[]{idx, 0});
+                nowWeight += trucks[idx++];
+            }
         }
         System.out.println(sec);
     }
