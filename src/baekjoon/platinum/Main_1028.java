@@ -32,16 +32,6 @@ public class Main_1028 {
             }
         }
 
-        for(int k=0; k<4; k++){
-            for(int i=0; i<N; i++){
-                for(int j=0; j<M; j++){
-                    System.out.print(dp[k][i][j]+"");
-                }
-                System.out.println();
-            }
-            System.out.println();
-        }
-
         int ans = 0;
         for(int i=0; i<N; i++){
             for(int j=0; j<M; j++){
@@ -65,7 +55,7 @@ public class Main_1028 {
             dp[k][a][b] = 1;
             int x = a+mv[k][0];
             int y = b+mv[k][1];
-            if(x<0||y<0||x>=N||y>=N) continue;
+            if(x<0||y<0||x>=N||y>=M) continue;
             dp[k][a][b] = dp[k][x][y]+1;
         }
     }
